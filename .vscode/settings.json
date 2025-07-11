@@ -1,0 +1,19 @@
+{
+  "github.copilot.chat.experimental.mcp.servers": {
+    "cpp-mcp-server": {
+      "command": "C:\\Development\\MCP\\build\\bin\\Debug\\mcp_server.exe",
+      "args": [],
+      "cwd": "C:\\Development\\MCP"
+    }
+  },
+  // Set the default formatter
+  "editor.defaultFormatter": "ms-vscode.cpptools",
+  // Format on save
+  "editor.formatOnSave": true,
+  // Clang-format style options
+  "C_Cpp.clang_format_style": "file", // or "Google", "LLVM", "Microsoft", etc.
+  "C_Cpp.clang_format_fallbackStyle": "Google",
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
