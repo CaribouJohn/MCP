@@ -32,9 +32,3 @@ inline std::shared_ptr<spdlog::logger> setup_logger(
 }
 
 }  // namespace McpLogging
-
-// Logging macros for compatibility
-#define MCP_LOG_DEBUG(msg) spdlog::debug(msg)
-#define MCP_LOG_INFO(msg) spdlog::info(msg)
-#define MCP_LOG_WARN(msg) spdlog::warn(msg)
-#define MCP_LOG_ERROR(msg) spdlog::error(msg)

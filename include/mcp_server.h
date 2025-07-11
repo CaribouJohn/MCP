@@ -58,8 +58,13 @@ class McpServer {
     return toolHandlers_;
   }
 
-  // Server info
+  // Server info accessors
   McpServerInfo getServerInfo() const { return serverInfo_; }
+  const std::string &getName() const { return serverInfo_.name; }
+  const std::string &getVersion() const { return serverInfo_.version; }
+  const McpCapabilities &getCapabilities() const {
+    return serverInfo_.capabilities;
+  }
 
  private:
   McpServerInfo serverInfo_;

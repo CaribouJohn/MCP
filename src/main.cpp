@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     McpLogging::setup_logger("mcp_server", log_level, log_file, also_console);
 
-    MCP_LOG_INFO("=== MCP Server Starting ===");
+    spdlog::info("=== MCP Server Starting ===");
 
     // Create MCP server instance
     McpServer server("cpp-mcp-server", "1.0.0");
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     // Initialize server
     server.initialize();
 
-    MCP_LOG_INFO("Server initialized, starting main communication loop");
+    spdlog::info("Server initialized, starting main communication loop");
 
     // For MCP, we need to communicate via stdin/stdout
     // This is how VS Code will communicate with the server
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 
     while (std::getline(std::cin, line)) {
       requestCount++;
-      MCP_LOG_DEBUG("Received request #" + std::to_string(requestCount) + ": " +
+      spdlog::debug("Received request #" + std::to_string(requestCount) + ": " +
                     line);
 
       if (!line.empty()) {
@@ -78,22 +78,22 @@ int main(int argc, char* argv[]) {
         server.processRequest(line, response);
 
         if (!response.empty()) {
-          MCP_LOG_DEBUG("Sending response #" + std::to_string(requestCount) +
+          spdlog::debug("Sending response #" + std::to_string(requestCount) +
                         ": " + response);
           std::cout << response << std::endl;
           std::cout.flush();
         } else {
-          MCP_LOG_WARN("Empty response generated for request #" +
+          spdlog::warn("Empty response generated for request #" +
                        std::to_string(requestCount));
         }
       } else {
-        MCP_LOG_DEBUG("Received empty line, ignoring");
+        spdlog::debug("Received empty line, ignoring");
       }
     }
 
-    MCP_LOG_INFO("Main loop ended - stdin closed");
+    spdlog::info("Main loop ended - stdin closed");
   } catch (const std::exception& e) {
-    MCP_LOG_ERROR(std::string("Exception in main: ") + e.what());
+    spdlog::error(std::string("Exception in main: ") + e.what());
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
   }

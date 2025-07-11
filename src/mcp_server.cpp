@@ -28,10 +28,10 @@ McpServer::McpServer(const std::string &name, const std::string &version)
 McpServer::~McpServer() { stop(); }
 
 void McpServer::initialize() {
-  MCP_LOG_INFO("Initializing MCP server: " + serverInfo_.name + " v" +
+  spdlog::info("Initializing MCP server: " + serverInfo_.name + " v" +
                serverInfo_.version);
   setupDefaultTools();
-  MCP_LOG_INFO("Server initialization complete. Tools registered: " +
+  spdlog::info("Server initialization complete. Tools registered: " +
                std::to_string(tools_.size()));
 }
 
@@ -47,7 +47,7 @@ static std::vector<std::string> requestHistory;
 
 void McpServer::processRequest(const std::string &request,
                                std::string &response) {
-  MCP_LOG_DEBUG("Processing request: " + request.substr(0, 100) +
+  spdlog::debug("Processing request: " + request.substr(0, 100) +
                 (request.length() > 100 ? "..." : ""));
 
   // Store request in history (keep last 10)
@@ -58,7 +58,7 @@ void McpServer::processRequest(const std::string &request,
   json params;
 
   if (jsonRpc_->parseRequest(request, method, params, id)) {
-    MCP_LOG_INFO("Parsed request - Method: " + method + ", ID: " + id);
+    spdlog::info("Parsed request - Method: " + method + ", ID: " + id);
 
     if (method == "initialize") {
       handleInitialize(request, response);
@@ -69,19 +69,19 @@ void McpServer::processRequest(const std::string &request,
     } else if (method == "ping") {
       handlePing(request, response);
     } else {
-      MCP_LOG_WARN("Unknown method: " + method);
+      spdlog::warn("Unknown method: " + method);
       response = jsonRpc_->createErrorResponse(id, -32601,
                                                "Method not found: " + method);
     }
   } else {
-    MCP_LOG_ERROR("Failed to parse JSON-RPC request: " + request);
+    spdlog::error("Failed to parse JSON-RPC request: " + request);
     response = jsonRpc_->createErrorResponse("", -32700, "Parse error");
   }
 }
 
 void McpServer::handleInitialize(const std::string &request,
                                  std::string &response) {
-  MCP_LOG_INFO("Handling initialize request");
+  spdlog::info("Handling initialize request");
 
   std::string method, id;
   json params;
@@ -97,9 +97,9 @@ void McpServer::handleInitialize(const std::string &request,
           {"logging", serverInfo_.capabilities.logging}}}};
 
     response = jsonRpc_->createResponse(id, result);
-    MCP_LOG_INFO("Initialize response created successfully");
+    spdlog::info("Initialize response created successfully");
   } else {
-    MCP_LOG_ERROR("Failed to parse initialize request");
+    spdlog::error("Failed to parse initialize request");
     response = jsonRpc_->createErrorResponse(id, -32700, "Parse error");
   }
 }
@@ -129,7 +129,7 @@ void McpServer::handleListTools(const std::string &request,
 
 void McpServer::handleCallTool(const std::string &request,
                                std::string &response) {
-  MCP_LOG_INFO("Handling tools/call request");
+  spdlog::info("Handling tools/call request");
 
   std::string method, id;
   json params;
@@ -139,12 +139,12 @@ void McpServer::handleCallTool(const std::string &request,
     json arguments =
         params.contains("arguments") ? params["arguments"] : json::object();
 
-    MCP_LOG_INFO("Tool call request - name: " + toolName +
+    spdlog::info("Tool call request - name: " + toolName +
                  ", arguments: " + arguments.dump());
 
     if (toolHandlers_.find(toolName) != toolHandlers_.end()) {
       try {
-        MCP_LOG_INFO("Calling tool: " + toolName);
+        spdlog::info("Calling tool: " + toolName);
         json result = toolHandlers_[toolName](arguments);
 
         // Format result according to MCP specification
@@ -158,18 +158,18 @@ void McpServer::handleCallTool(const std::string &request,
 
         json resultObj = {{"content", contentArray}};
         response = jsonRpc_->createResponse(id, resultObj);
-        MCP_LOG_INFO("Tool call completed successfully: " + toolName);
+        spdlog::info("Tool call completed successfully: " + toolName);
       } catch (const std::exception &e) {
-        MCP_LOG_ERROR("Tool call failed: " + toolName + " - " + e.what());
+        spdlog::error("Tool call failed: " + toolName + " - " + e.what());
         response = jsonRpc_->createErrorResponse(id, -32603, e.what());
       }
     } else {
-      MCP_LOG_ERROR("Tool not found: " + toolName);
+      spdlog::error("Tool not found: " + toolName);
       response = jsonRpc_->createErrorResponse(id, -32601,
                                                "Tool not found: " + toolName);
     }
   } else {
-    MCP_LOG_ERROR("Failed to parse tools/call request");
+    spdlog::error("Failed to parse tools/call request");
     response = jsonRpc_->createErrorResponse(id, -32700, "Parse error");
   }
 }

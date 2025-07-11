@@ -17,9 +17,9 @@ void InitializeHandler::handle(const json& request, std::string& response) {
                     {{"tools", server_.serverInfo_.capabilities.tools},
                      {"logging", server_.serverInfo_.capabilities.logging}}}};
     response = jsonRpc_.createResponse(id, result);
-    MCP_LOG_INFO("Initialize response created successfully");
+    spdlog::info("Initialize response created successfully");
   } else {
-    MCP_LOG_ERROR("Failed to parse initialize request");
+    spdlog::error("Failed to parse initialize request");
     response = jsonRpc_.createErrorResponse(id, -32700, "Parse error");
   }
 }
