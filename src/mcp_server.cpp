@@ -6,6 +6,10 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "handlers/call_tool_handler.h"
+#include "handlers/initialize_handler.h"
+#include "handlers/list_tools_handler.h"
+#include "handlers/ping_handler.h"
 #include "json_rpc.h"
 #include "mcp_logger.h"
 

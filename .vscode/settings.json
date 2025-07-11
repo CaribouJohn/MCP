@@ -15,5 +15,14 @@
   "C_Cpp.clang_format_fallbackStyle": "Google",
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    "locale": "cpp",
+    "thread": "cpp",
+    "xlocale": "cpp",
+    "xlocmes": "cpp",
+    "xlocmon": "cpp",
+    "xlocnum": "cpp",
+    "xloctime": "cpp"
   }
 }
