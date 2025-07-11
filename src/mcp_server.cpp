@@ -6,7 +6,6 @@
 #include <sstream>
 #include <stdexcept>
 
-
 #include "json_rpc.h"
 #include "mcp_logger.h"
 
