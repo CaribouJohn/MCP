@@ -1,5 +1,20 @@
 
 #include <chrono>
+
+// MCP Server main entry point
+//
+// Logging:
+//   - All server events, incoming requests, and outgoing responses are logged
+//   to 'mcp_server.log' by default.
+//   - The log file location can be changed with the MCP_LOG_FILE environment
+//   variable or --log-file argument.
+//   - To check what was sent/received over stdio, open 'mcp_server.log'.
+//   - Example log entries:
+//       [2025-07-12 14:23:02] [info] [STDIO IN] { ...JSON-RPC request... }
+//       [2025-07-12 14:23:02] [info] [STDIO OUT] { ...JSON-RPC response... }
+//   - All logs are flushed immediately for real-time debugging.
+//
+// See also: 'bridge_stdio.log' for raw stdio bridge logs.
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -8,6 +23,9 @@
 #include "json_rpc.h"
 #include "mcp_logger.h"
 #include "mcp_server.h"
+#include "stdio_adapter.h"
+// #include "tcp_server_adapter.h" // Removed TCP support
+#include "transport_adapter.h"
 
 int main(int argc, char* argv[]) {
   try {
@@ -63,31 +81,34 @@ int main(int argc, char* argv[]) {
 
     spdlog::info("Server initialized, starting main communication loop");
 
-    // For MCP, we need to communicate via stdin/stdout
-    // This is how VS Code will communicate with the server
-    std::string line;
+    // Adapter selection logic
+    // Only support stdio transport
+    std::unique_ptr<ITransportAdapter> adapter;
+    spdlog::info("Using StdioAdapter (stdio-only mode)");
+    adapter = std::make_unique<StdioAdapter>();
+
+    std::string message;
     int requestCount = 0;
 
-    while (std::getline(std::cin, line)) {
+    while (adapter->readMessage(message)) {
       requestCount++;
       spdlog::debug("Received request #" + std::to_string(requestCount) + ": " +
-                    line);
+                    message);
 
-      if (!line.empty()) {
+      if (!message.empty()) {
         std::string response;
-        server.processRequest(line, response);
+        server.processRequest(message, response);
 
         if (!response.empty()) {
           spdlog::debug("Sending response #" + std::to_string(requestCount) +
                         ": " + response);
-          std::cout << response << std::endl;
-          std::cout.flush();
+          adapter->writeMessage(response);
         } else {
           spdlog::warn("Empty response generated for request #" +
                        std::to_string(requestCount));
         }
       } else {
-        spdlog::debug("Received empty line, ignoring");
+        spdlog::debug("Received empty message, ignoring");
       }
     }
 

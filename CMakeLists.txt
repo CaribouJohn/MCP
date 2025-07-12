@@ -47,6 +47,7 @@ add_executable(mcp_server
     src/handlers/list_tools_handler.cpp
     src/handlers/call_tool_handler.cpp
     src/handlers/ping_handler.cpp
+    src/stdio_adapter.cpp
 )
 
 # Link libraries

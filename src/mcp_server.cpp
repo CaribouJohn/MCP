@@ -54,6 +54,9 @@ void McpServer::processRequest(const std::string &request,
   requestHistory.push_back(request);
   if (requestHistory.size() > 10) requestHistory.erase(requestHistory.begin());
 
+  // Log incoming request to file
+  spdlog::info("[IN] " + request);
+
   std::string method, id;
   json params;
 
@@ -77,6 +80,9 @@ void McpServer::processRequest(const std::string &request,
     spdlog::error("Failed to parse JSON-RPC request: " + request);
     response = jsonRpc_->createErrorResponse("", -32700, "Parse error");
   }
+
+  // Log outgoing response to file
+  spdlog::info("[OUT] " + response);
 }
 
 void McpServer::handleInitialize(const std::string &request,
